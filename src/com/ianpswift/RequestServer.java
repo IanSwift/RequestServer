@@ -1,15 +1,13 @@
 package com.ianpswift;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.function.Function;
 
 public class RequestServer {
-    public static void listen(Function callback, int port) throws IOException, InterruptedException {
+    public static void listen(Function callback, int port) throws IOException {
         if (callback == null) {
             throw new NullPointerException("handleRequest cannot be null");
         }
@@ -17,7 +15,7 @@ public class RequestServer {
         ServerSocket server = new ServerSocket();
         server.bind(new InetSocketAddress(port));
 
-       new Thread(() -> {
+        new Thread(() -> {
             while(true) {
                 try {
                     Socket accept = server.accept();
@@ -44,8 +42,10 @@ public class RequestServer {
                 break;
             }
         }
+        byte[] response = (byte[]) callback.apply(stringBuilder.toString().getBytes());
+
         OutputStream outputStream = currentSocket.getOutputStream();
-        outputStream.write(("HTTP/1.1 200 OK\r\nContent-Length: "+stringBuilder.toString().length() +"\r\n\r\n"+stringBuilder.toString()).getBytes());
+        outputStream.write(("HTTP/1.1 200 OK\r\nContent-Length: "+response.length+"\r\n\r\n"+new String(response)).getBytes());
 
         currentSocket.close();
     }
