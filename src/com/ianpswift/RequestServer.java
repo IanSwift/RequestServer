@@ -1,7 +1,5 @@
 package com.ianpswift;
 
-import com.ianpswift.utilities.ThreadPool;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,23 +9,24 @@ import java.net.Socket;
 import java.util.function.Function;
 
 public class RequestServer {
-    public static ThreadPool threadPool;
-
     public static void listen(Function callback, int port) throws IOException, InterruptedException {
         if (callback == null) {
             throw new NullPointerException("handleRequest cannot be null");
         }
 
-        threadPool = new ThreadPool();
-
         ServerSocket server = new ServerSocket();
         server.bind(new InetSocketAddress(port));
 
-        threadPool.getThread(() -> {
+       new Thread(() -> {
             while(true) {
                 try {
                     Socket accept = server.accept();
-                    handleRequest(accept, callback);
+                    new Thread(() -> {
+                        try {
+                            handleRequest(accept, callback);
+                        } catch (IOException e) {
+                        }
+                    }).start();
                 } catch (Exception e) {
                 }
             }
