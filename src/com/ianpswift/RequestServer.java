@@ -23,16 +23,15 @@ public class RequestServer {
         ServerSocket server = new ServerSocket();
         server.bind(new InetSocketAddress(port));
 
-        while(true) {
-            Socket accept = server.accept();
-
-            threadPool.getThread(()-> {
+        threadPool.getThread(() -> {
+            while(true) {
                 try {
+                    Socket accept = server.accept();
                     handleRequest(accept, callback);
-                } catch(IOException e) {
+                } catch (Exception e) {
                 }
-            }).start();
-        }
+            }
+        }).start();
     }
 
     private static void handleRequest(Socket currentSocket, Function callback) throws IOException {

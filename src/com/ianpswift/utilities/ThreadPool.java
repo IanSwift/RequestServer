@@ -12,13 +12,14 @@ public class ThreadPool {
 
         threadPoolManager = new Thread(() -> {
             while(true) {
-                for (int i = 0; i < THREAD_COUNT; i++) {
-                    if (threads[i] != null && !threads[i].isAlive()) {
-                        threads[i] = null;
-                    }
-                }
                 try {
-                    Thread.sleep(0,500);
+                    for (int i = 0; i < THREAD_COUNT; i++) {
+                        if (threads[i] != null && !threads[i].isAlive()) {
+                            threads[i].join();
+                            threads[i] = null;
+                        }
+                    }
+                    Thread.sleep(2);
                 } catch (Exception e) {
                 }
             }
@@ -40,15 +41,7 @@ public class ThreadPool {
         return threads[threadAcquired];
     }
 
-    private void releaseThread(Thread thread) {
-        for (int i = 0; i < THREAD_COUNT; i++) {
-            if (threads[i] == thread) {
-                threads[i] = null;
-            }
-        }
-    }
-
-    private int attemptAcquireThread(Runnable runnable) throws InterruptedException {
+    private int attemptAcquireThread(Runnable runnable) {
         for (int i = 0; i < THREAD_COUNT; i++) {
             if (threads[i] == null) {
                 Thread thread = new Thread(runnable);
