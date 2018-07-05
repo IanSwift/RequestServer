@@ -5,7 +5,7 @@ public class Lock {
 
     synchronized  public void lock() throws InterruptedException {
         while (count != 0) {
-            wait(0, ((int)(Math.random()*200)) + 567);
+            Thread.sleep(0, ((int)(Math.random()*200)) + 567);
         }
         count++;
         if (count > 1) {

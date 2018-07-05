@@ -11,12 +11,20 @@ public class ThreadPool {
         lock = new Lock();
 
         threadPoolManager = new Thread(() -> {
-            for (int i = 0; i < THREAD_COUNT; i++) {
-                if (threads[i] != null && !threads[i].isAlive()) {
-                    threads[i] = null;
+            while(true) {
+                for (int i = 0; i < THREAD_COUNT; i++) {
+                    if (threads[i] != null && !threads[i].isAlive()) {
+                        threads[i] = null;
+                    }
+                }
+                try {
+                    Thread.sleep(0,500);
+                } catch (Exception e) {
                 }
             }
         });
+
+        threadPoolManager.start();
     }
 
     synchronized public Thread getThread(Runnable runnable) throws InterruptedException {
@@ -25,7 +33,7 @@ public class ThreadPool {
         int threadAcquired = -1;
         while (threadAcquired == -1) {
             threadAcquired = attemptAcquireThread(runnable);
-            wait(0,500);
+            Thread.sleep(0,500);
         }
 
         lock.unlock();

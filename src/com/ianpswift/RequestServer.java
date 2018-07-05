@@ -31,7 +31,7 @@ public class RequestServer {
                     handleRequest(accept, callback);
                 } catch(IOException e) {
                 }
-            }).run();
+            }).start();
         }
     }
 
