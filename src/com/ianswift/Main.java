@@ -1,4 +1,4 @@
-package com.ianpswift;
+package com.ianswift;
 
 import java.io.IOException;
 
